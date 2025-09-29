@@ -20,7 +20,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client:3.4.1")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 

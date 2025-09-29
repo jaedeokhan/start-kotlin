@@ -28,7 +28,7 @@ logging:
     org:
       hibernate:
         type.descriptor.sql: trace
-      SQL: debug
+        SQL: debug
 
 kakao:
   api-key: ${KAKAO_API_KEY}

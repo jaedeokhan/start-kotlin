@@ -1,15 +1,20 @@
 package com.example.api.blog.service
 
 import com.example.api.blog.dto.BlogDto
+import com.example.api.blog.entity.WordCount
+import com.example.api.blog.repository.WordRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
+import reactor.core.publisher.Mono
 
 @Service
-class BlogService {
+class BlogService (
+    val wordRepository: WordRepository
+){
 
     @Value("\${kakao.api-key}")
     val kakaoApiKey: String = ""
@@ -30,10 +35,26 @@ class BlogService {
                 .queryParam("size", blogDto.size)
                 .build() }
             .header("Authorization", "KakaoAK $kakaoApiKey")
-            .retrieve()
-            .bodyToMono<String>()
+            .exchangeToMono { response ->
+                if (response.statusCode().is2xxSuccessful) {
+                    response.bodyToMono(String::class.java)
+                } else {
+                    response.bodyToMono(String::class.java).flatMap { body ->
+                        Mono.error(RuntimeException("Error : ${response.statusCode()}"))
+                    }
+                }
+            }
 
         var result = response.block()
+
+        val lowQuery: String = blogDto.query.lowercase()
+        val word: WordCount = wordRepository.findById(lowQuery).orElse(WordCount(lowQuery))
+        word.cnt++
+
+        wordRepository.save(word)
+
         return result
     }
+
+    fun searchWordRank(): List<WordCount> = wordRepository.findTop10ByOrderByCntDesc()
 }
