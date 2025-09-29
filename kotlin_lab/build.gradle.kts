@@ -14,13 +14,17 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework:spring-webflux")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+    testImplementation(kotlin("test"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
