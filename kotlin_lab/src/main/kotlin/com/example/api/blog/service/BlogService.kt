@@ -1,17 +1,13 @@
 package com.example.api.blog.service
 
-import com.example.api.blog.constants.ExceptionMsg
-import com.example.api.blog.constants.SortType
 import com.example.api.blog.dto.BlogDto
 import com.example.api.blog.entity.WordCount
 import com.example.api.blog.repository.WordRepository
-import com.example.api.core.exception.InvalidInputException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
 
 @Service
