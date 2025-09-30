@@ -3,7 +3,7 @@ GET http://localhost:8080/api/blog
 Content-Type: application/json
 
 {
-    "query": "이효리",
+    "query": "",
     "sort": "accuracy",
     "page": 1,
     "size": 100

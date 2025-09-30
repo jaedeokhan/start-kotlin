@@ -1,8 +1,11 @@
 package com.example.api.blog.service
 
+import com.example.api.blog.constants.ExceptionMsg
+import com.example.api.blog.constants.SortType
 import com.example.api.blog.dto.BlogDto
 import com.example.api.blog.entity.WordCount
 import com.example.api.blog.repository.WordRepository
+import com.example.api.core.exception.InvalidInputException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -20,6 +23,9 @@ class BlogService (
     val kakaoApiKey: String = ""
 
     fun searchKakao(blogDto: BlogDto): String? {
+
+        validateBlog(blogDto)
+
         val webClient: WebClient = WebClient
             .builder()
             .baseUrl("https://dapi.kakao.com")
@@ -47,13 +53,40 @@ class BlogService (
 
         var result = response.block()
 
+        saveWord(blogDto)
+
+        return result
+    }
+
+    private fun validateBlog(blogDto: BlogDto) {
+
+        val msgList = mutableListOf<ExceptionMsg>()
+
+        if (blogDto.query.trim().isEmpty()) {
+            msgList.add(ExceptionMsg.EMPTY_QUERY)
+        }
+
+        if (blogDto.sort.trim() !in arrayOf(SortType.ACCURACY.type, SortType.RECENCY.type)) {
+            msgList.add(ExceptionMsg.NOT_IN_SORT)
+        }
+
+        when {
+            blogDto.page < 1 -> msgList.add(ExceptionMsg.LESS_THAN_MIN)
+            blogDto.page > 50 -> msgList.add(ExceptionMsg.MORE_THAN_MAX)
+        }
+
+        if (msgList.isNotEmpty()) {
+            val message = msgList.joinToString { it.msg }
+            throw InvalidInputException(message)
+        }
+    }
+
+    private fun saveWord(blogDto: BlogDto) {
         val lowQuery: String = blogDto.query.lowercase()
         val word: WordCount = wordRepository.findById(lowQuery).orElse(WordCount(lowQuery))
         word.cnt++
 
         wordRepository.save(word)
-
-        return result
     }
 
     fun searchWordRank(): List<WordCount> = wordRepository.findTop10ByOrderByCntDesc()
