@@ -3,8 +3,8 @@ GET http://localhost:8080/api/blog
 Content-Type: application/json
 
 {
-    "query": "",
-    "sort": "accuracy",
+    "query": "이효리",
+    "sort": "ACCURACY",
     "page": 1,
     "size": 100
 }

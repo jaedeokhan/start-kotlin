@@ -3,6 +3,8 @@ package com.example.api.core.exception
 import com.example.api.core.response.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.FieldError
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -15,4 +17,14 @@ class CustomExceptionHandler {
         return ResponseEntity(errors, HttpStatus.BAD_REQUEST)
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    protected fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<Map<String, String>> {
+        val errors = mutableMapOf<String, String>()
+        ex.bindingResult.allErrors.forEach { error ->
+            val fieldName = (error as FieldError).field
+            val errorMessage = error.getDefaultMessage()
+            errors[fieldName] = errorMessage ?: "NULL"
+        }
+        return ResponseEntity(errors, HttpStatus.BAD_REQUEST)
+    }
 }

@@ -1,8 +1,8 @@
 package com.example.api.blog.constants
 
 enum class ExceptionMsg(val msg: String) {
-    EMPTY_QUERY("query parameter required"),
-    NOT_IN_SORT("sort parameter one of accuracy and recency"),
-    LESS_THAN_MIN("page is less than min"),
-    MORE_THAN_MAX("page is more than max")
+    EMPTY_QUERY(CommonMsg.EMPTY_QUERY_MSG),
+    NOT_IN_SORT(CommonMsg.NOT_IN_SORT_MSG),
+    LESS_THAN_MIN(CommonMsg.LESS_THAN_MIN_MSG),
+    MORE_THAN_MAX(CommonMsg.MORE_THAN_MAX_MSG)
 }
