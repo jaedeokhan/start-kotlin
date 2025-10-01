@@ -5,4 +5,5 @@ object CommonConstants {
     const val CLAIM_AUTH_KEY = "auth"
     const val BEARER_PREFIX = "Bearer"
     const val AUTHORIZATION_HEADER = "Authorization"
+    const val ROLE_PREFIX = "Role"
 }

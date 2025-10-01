@@ -25,7 +25,6 @@ logging:
     console: "[%d{HH:mm:ss.SSS}][%-5level][%logger.%method:line%line] - %msg%n"
   level:
     org:
-      springframework: debug
       hibernate:
         type.descriptor.sql: trace
         SQL: debug
