@@ -1,4 +1,6 @@
 package com.example.auth.common.status
 
-class Gender {
+enum class Gender(val desc: String) {
+    MAN("남"),
+    WOMAN("여")
 }
