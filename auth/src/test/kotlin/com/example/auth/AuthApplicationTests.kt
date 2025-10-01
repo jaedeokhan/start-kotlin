@@ -84,8 +84,7 @@ class AuthApplicationTests @Autowired constructor(
         val accessToken: String = objectMapper.readTree(response)
             .get("data").get("accessToken").asText()
 
-        val id = 1
-        mockMvc.get("/api/member/info/${id}") {
+        mockMvc.get("/api/member/info") {
             header("Authorization", "Bearer $accessToken")
         }
             .andExpect {

@@ -1,5 +1,6 @@
 package com.example.auth.common.authority
 
+import com.example.auth.common.dto.CustomUser
 import com.example.auth.common.status.CommonConstants
 import com.example.auth.common.status.ResultCode
 import io.jsonwebtoken.Claims
@@ -42,6 +43,7 @@ class JwtTokenProvider(
         val accessToken = Jwts.builder()
             .setSubject(authentication.name)
             .claim(CommonConstants.CLAIM_AUTH_KEY, authorities)
+            .claim(CommonConstants.CLAIM_USER_ID_KEY, (authentication.principal as CustomUser).userId)
             .setIssuedAt(now)
             .setExpiration(accessExpiration)
             .signWith(key, SignatureAlgorithm.HS256)
@@ -57,13 +59,14 @@ class JwtTokenProvider(
         val claims: Claims = getClaims(token)
 
         val auth = claims[CommonConstants.CLAIM_AUTH_KEY] ?: throw RuntimeException(ResultCode.INVALID_TOKEN.msg)
+        val userId = claims[CommonConstants.CLAIM_USER_ID_KEY] ?: throw RuntimeException(ResultCode.INVALID_TOKEN.msg)
 
         // 권한 정보 추출
         val authorities: Collection<GrantedAuthority> = (auth as String)
             .split(",")
             .map { SimpleGrantedAuthority(it) }
 
-        val principal: UserDetails = User(claims.subject, "", authorities)
+        val principal: UserDetails = CustomUser(userId.toString().toLong(), claims.subject, "", authorities)
 
         return UsernamePasswordAuthenticationToken(principal, "", authorities)
     }
