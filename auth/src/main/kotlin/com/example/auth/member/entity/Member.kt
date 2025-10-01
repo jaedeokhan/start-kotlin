@@ -1,6 +1,7 @@
 package com.example.auth.member.entity
 
 import com.example.auth.common.status.Gender
+import com.example.auth.member.dto.MemberDtoResponse
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -15,6 +16,7 @@ import jakarta.persistence.Temporal
 import jakarta.persistence.TemporalType
 import jakarta.persistence.UniqueConstraint
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Entity
 @Table(
@@ -49,4 +51,18 @@ class Member (
 ) {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "member")
     val memberRole: MutableList<MemberRole> = mutableListOf()
+
+    private fun LocalDate.formatDate(): String =
+        this.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+
+    fun toDto(): MemberDtoResponse {
+        return MemberDtoResponse(
+            id = id!!,
+            loginId = loginId,
+            name = name,
+            birthDate = birthDate.formatDate(),
+            gender = gender.desc,
+            email = email
+        )
+    }
 }

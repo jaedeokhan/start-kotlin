@@ -1,5 +1,6 @@
 package com.example.auth.common.authority
 
+import com.example.auth.common.status.Role
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -24,7 +25,8 @@ class SecurityConfig(
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/member/signup").anonymous()
+                it.requestMatchers("/api/member/signup", "/api/member/login").anonymous()
+                    .requestMatchers("/api/member/info/**").hasRole(Role.MEMBER.name)
                     .anyRequest().permitAll()
             }
             .addFilterBefore(

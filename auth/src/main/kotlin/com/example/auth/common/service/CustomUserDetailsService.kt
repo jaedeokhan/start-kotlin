@@ -27,7 +27,7 @@ class CustomUserDetailsService(
             member.loginId,
             passwordEncoder.encode(member.password),
             member.memberRole!!.map {
-                SimpleGrantedAuthority("${CommonConstants.ROLE_PREFIX}_${it.role}")
+                SimpleGrantedAuthority("${CommonConstants.ROLE_PREFIX}_${it.role}") // Ex, ROLE_MEMBER
             },
         )
 }

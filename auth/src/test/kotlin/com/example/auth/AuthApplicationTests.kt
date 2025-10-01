@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 
 @SpringBootTest
@@ -43,23 +44,53 @@ class AuthApplicationTests @Autowired constructor(
             }
     }
 
-    @Test
-    fun `POST 로그인 시 200 응답`() {
-        `POST 회원가입 요청 시 200 응답`()
+    fun requestLogin(loginDto: LoginDto): String {
+        var json = objectMapper.writeValueAsString(loginDto)
 
-        var request = LoginDto(
-            _loginId = "hjaedeok",
-            _password = "test!1234"
-        )
-        var json = objectMapper.writeValueAsString(request)
-
-        mockMvc.post("/api/member/login") {
+        var result = mockMvc.post("/api/member/login") {
             contentType = MediaType.APPLICATION_JSON
             content = json
         }
             .andExpect {
                 status { is2xxSuccessful() }
                 jsonPath("$.resultCode") { value("SUCCESS")}
+            }.andReturn()
+
+        return result.response.contentAsString
+    }
+
+    @Test
+    fun `POST 로그인 시 200 응답`() {
+        `POST 회원가입 요청 시 200 응답`()
+
+        val request = LoginDto(
+            _loginId = "hjaedeok",
+            _password = "test!1234"
+        )
+
+        requestLogin(request)
+    }
+
+    @Test
+    fun `POST 내 정보 조회 200 응답`() {
+        `POST 회원가입 요청 시 200 응답`()
+
+        val request = LoginDto(
+            _loginId = "hjaedeok",
+            _password = "test!1234"
+        )
+
+        val response = requestLogin(request)
+        val accessToken: String = objectMapper.readTree(response)
+            .get("data").get("accessToken").asText()
+
+        val id = 1
+        mockMvc.get("/api/member/info/${id}") {
+            header("Authorization", "Bearer $accessToken")
+        }
+            .andExpect {
+                status { is2xxSuccessful() }
+                jsonPath("$.data.loginId") { value("hjaedeok",)}
             }
     }
 }

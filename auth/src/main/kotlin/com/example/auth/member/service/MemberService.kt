@@ -2,15 +2,18 @@ package com.example.auth.member.service
 
 import com.example.auth.common.authority.JwtTokenProvider
 import com.example.auth.common.authority.TokenInfo
+import com.example.auth.common.exception.InvalidInputException
 import com.example.auth.common.status.ResultCode
 import com.example.auth.common.status.Role
 import com.example.auth.member.dto.LoginDto
 import com.example.auth.member.dto.MemberDtoRequest
+import com.example.auth.member.dto.MemberDtoResponse
 import com.example.auth.member.entity.Member
 import com.example.auth.member.entity.MemberRole
 import com.example.auth.member.repository.MemberRepository
 import com.example.auth.member.repository.MemberRoleRepository
 import jakarta.transaction.Transactional
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.stereotype.Service
@@ -52,5 +55,14 @@ class MemberService (
         val authentication = authenticationManagerBuilder.`object`.authenticate(authenticationToken)
 
         return jwtTokenProvider.createToken(authentication)
+    }
+
+    /**
+     * 내 정보 조회
+     */
+    fun searchMyInfo(id: Long): MemberDtoResponse {
+        val member = memberRepository.findByIdOrNull(id)
+            ?: throw InvalidInputException("id", "회원번호($id)가 존재하지 않는 유저입니다.")
+        return member.toDto()
     }
 }
