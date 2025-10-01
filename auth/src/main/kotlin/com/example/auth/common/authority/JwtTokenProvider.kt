@@ -1,5 +1,6 @@
 package com.example.auth.common.authority
 
+import com.example.auth.common.status.CommonConstants
 import com.example.auth.common.status.ResultCode
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
@@ -19,9 +20,6 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.util.Date
 
-const val EXPIRATION_MILLISECONDS: Long = 1000 * 60 * 60 * 12
-const val CLAIM_AUTH = "auth"
-
 @Component
 class JwtTokenProvider(
     @Value("\${jwt.secret}")
@@ -38,18 +36,18 @@ class JwtTokenProvider(
             .joinToString(",", transform = GrantedAuthority::getAuthority)
 
         val now = Date()
-        val accessExpiration = Date(now.time + EXPIRATION_MILLISECONDS)
+        val accessExpiration = Date(now.time + CommonConstants.EXPIRATION_MILLISECONDS)
 
         // Access Token
         val accessToken = Jwts.builder()
             .setSubject(authentication.name)
-            .claim(CLAIM_AUTH, authorities)
+            .claim(CommonConstants.CLAIM_AUTH_KEY, authorities)
             .setIssuedAt(now)
             .setExpiration(accessExpiration)
             .signWith(key, SignatureAlgorithm.HS256)
             .compact()
 
-        return TokenInfo("Bearer", accessToken)
+        return TokenInfo(CommonConstants.BEARER_PREFIX, accessToken)
     }
 
     /**
@@ -58,7 +56,7 @@ class JwtTokenProvider(
     fun getAuthentication(token: String): Authentication {
         val claims: Claims = getClaims(token)
 
-        val auth = claims[CLAIM_AUTH] ?: throw RuntimeException(ResultCode.INVALID_TOKEN.msg)
+        val auth = claims[CommonConstants.CLAIM_AUTH_KEY] ?: throw RuntimeException(ResultCode.INVALID_TOKEN.msg)
 
         // 권한 정보 추출
         val authorities: Collection<GrantedAuthority> = (auth as String)

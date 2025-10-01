@@ -1,13 +1,14 @@
 package com.example.auth.common.authority
 
+import com.example.auth.common.status.CommonConstants
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.util.StringUtils
 import org.springframework.web.filter.GenericFilterBean
 
-const val BEARER_HEADER = "Bearer"
 
 class JwtAuthenticationFilter(
     private val jwtTokenProvider: JwtTokenProvider
@@ -15,14 +16,21 @@ class JwtAuthenticationFilter(
 
     override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
         val token = resolveToken(request as HttpServletRequest)
+
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            val authentication = jwtTokenProvider.getAuthentication(token)
+            SecurityContextHolder.getContext().authentication = authentication
+        }
+
+        chain?.doFilter(request, response)
     }
 
     private fun resolveToken(request: HttpServletRequest): String? {
-        val bearerToken = request.getHeader("Authorization")
+        val bearerToken = request.getHeader(CommonConstants.AUTHORIZATION_HEADER)
 
         return if (StringUtils.hasText(bearerToken) &&
-            bearerToken.startsWith(BEARER_HEADER)) {
-                bearerToken.substring(BEARER_HEADER.length + 1)
+            bearerToken.startsWith(CommonConstants.BEARER_PREFIX)) {
+                bearerToken.substring(CommonConstants.BEARER_PREFIX.length + 1)
             } else {
                 null
             }
