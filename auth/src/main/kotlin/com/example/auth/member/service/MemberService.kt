@@ -1,5 +1,6 @@
 package com.example.auth.member.service
 
+import com.example.auth.common.status.ResultCode
 import com.example.auth.member.dto.MemberDtoRequest
 import com.example.auth.member.entity.Member
 import com.example.auth.member.repository.MemberRepository
@@ -18,21 +19,12 @@ class MemberService (
         // ID 중복 검사
         var member: Member? = memberRepository.findByLoginId(memberDtoRequest.loginId)
         if (member != null) {
-            return "이미 등록된 ID 입니다."
+            return ResultCode.MEMBER_ALREADY_SIGNUP_ID.msg
         }
 
-        member = Member(
-            null,
-            memberDtoRequest.loginId,
-            memberDtoRequest.password,
-            memberDtoRequest.name,
-            memberDtoRequest.birthDate,
-            memberDtoRequest.gender,
-            memberDtoRequest.email
-        )
-
+        member = memberDtoRequest.toEntity();
         memberRepository.save(member)
 
-        return "회원가입이 완료 되었습니다."
+        return ResultCode.MEMBER_SIGNUP_SUCCESS.msg
     }
 }

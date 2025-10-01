@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "loginId": "hjaedeok",
-  "password" : "test",
+  "password" : "test!1234",
   "name": "deok",
   "birthDate": "2025-09-30",
   "gender": "MAN",
