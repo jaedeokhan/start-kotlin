@@ -3,6 +3,7 @@ package com.example.auth.member.service
 import com.example.auth.common.authority.JwtTokenProvider
 import com.example.auth.common.authority.TokenInfo
 import com.example.auth.common.exception.InvalidInputException
+import com.example.auth.common.status.CommonConstants
 import com.example.auth.common.status.ResultCode
 import com.example.auth.common.status.Role
 import com.example.auth.member.dto.LoginDto
@@ -64,5 +65,14 @@ class MemberService (
         val member = memberRepository.findByIdOrNull(id)
             ?: throw InvalidInputException("id", "회원번호($id)가 존재하지 않는 유저입니다.")
         return member.toDto()
+    }
+
+    /**
+     * 내 정보 변경
+     */
+    fun saveMyInfo(memberDtoRequest: MemberDtoRequest): String {
+        val member = memberDtoRequest.toEntity()
+        memberRepository.save(member)
+        return ResultCode.MEMBER_UPDATE_SUCCESS.msg
     }
 }

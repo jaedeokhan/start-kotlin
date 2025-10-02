@@ -11,6 +11,7 @@ enum class ResultCode(val msg: String) {
     // member
     MEMBER_ALREADY_SIGNUP_ID("이미 등록된 ID 입니다."),
     MEMBER_SIGNUP_SUCCESS("회원가입이 완료 되었습니다."),
+    MEMBER_UPDATE_SUCCESS("수정 완료되었습니다."),
 
     // login
     USERNAME_NOT_FOUND("해당하는 유저를 찾을 수 없습니다.")

@@ -9,12 +9,7 @@ import com.example.auth.member.dto.MemberDtoResponse
 import com.example.auth.member.service.MemberService
 import jakarta.validation.Valid
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RequestMapping("/api/member")
 @RestController
@@ -23,7 +18,7 @@ class MemberController(
 ) {
     @PostMapping("/signup")
     fun signUp(@RequestBody @Valid memberDtoRequest: MemberDtoRequest): BaseResponse<Unit> {
-        val resultMsg = memberService.signUp(memberDtoRequest)
+        val resultMsg: String = memberService.signUp(memberDtoRequest)
         return BaseResponse(message = resultMsg)
     }
 
@@ -35,13 +30,31 @@ class MemberController(
 
     @GetMapping("/info")
     fun searchMyInfo(): BaseResponse<MemberDtoResponse> {
+        val userId = getUserIdOfSecurity()
+        val member = memberService.searchMyInfo(userId);
+        return BaseResponse(data = member)
+    }
+
+
+    @PutMapping("/info")
+    fun updateMyInfo(@RequestBody memberDtoRequest: MemberDtoRequest): BaseResponse<Unit> {
+        val userId = getUserIdOfSecurity()
+        memberDtoRequest.id = userId
+        val resultMsg: String = memberService.saveMyInfo(memberDtoRequest)
+        return BaseResponse(message = resultMsg)
+    }
+
+    /**
+     * 시큐리티 userId 조회
+     */
+    private fun getUserIdOfSecurity(): Long {
         val userId = (SecurityContextHolder
             .getContext()
             .authentication
             .principal as CustomUser)
             .userId
-
-        val member = memberService.searchMyInfo(userId);
-        return BaseResponse(data = member)
+        return userId
     }
+
+
 }
